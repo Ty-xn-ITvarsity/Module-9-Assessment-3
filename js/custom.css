@@ -1,0 +1,124 @@
+/* CUSTOM STYLE */
+html {
+  font-size: 1.2rem !important;
+}
+
+a{
+  text-decoration: none;
+}
+
+.blog-header{
+  margin-top: 7rem;
+  max-width: 700px;
+}
+
+.team{
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  margin-bottom: 2rem;
+  padding-bottom: 0.7rem;
+}
+
+.active{
+  text-decoration: underline;
+}
+
+::-webkit-scrollbar{
+  width: 6px;
+}
+::-webkit-scrollbar-track{
+  background: transparent;
+  box-shadow: inset 0 0 5px #666;
+}
+::-webkit-scrollbar-thumb{
+  background: #666;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background: #999;
+}
+
+/* MEDIA QUERIES */
+
+@media (min-width: 768px) {
+  html {
+     font-size: 16px;
+  }
+}
+
+@media (max-width: 768px){
+  .blog-header{
+    margin-top: 8rem;
+  }
+}
+
+/* CUSTOM BOOTSTRAP */
+
+.container{
+  max-width: 960px;
+}
+
+.card-deck .card{
+  min-width: 220px;
+}
+
+.card-text{
+  padding-top: 1rem;
+}
+
+.card-block{
+  min-height: 220px;
+}
+
+.btn-lg.btn-link{
+  border: 0;
+}
+
+.img-thumbnail{
+  padding: 0;
+  border: 0;
+}
+
+/* DARK MODE STYLE */
+
+.fas.fa-moon{
+  color: black;
+}
+
+.fas.fa-sun{
+  color: #fff;
+}
+
+button.btn-lg.btn-link{
+  border-radius: 50%;
+  margin-right: 0.15rem;
+  background-color: lightgrey;
+  color: black;
+}
+
+.card.dark-mode{
+  border: 1px solid grey;
+}
+
+.card-header.dark-mode{
+  border: 0px;
+  border-bottom: 1px solid grey;
+}
+
+.dark-mode .btn-lg.btn-link{
+  background-color: grey;
+  color: white;
+}
+
+small.text-muted.dark-mode{
+  color: white !important;
+}
+
+.bg-white.text-bg-dark{
+  background-color: rgb(44, 47, 41) !important;
+}
+
+div.d-flex.text-bg-dark > nav > a.text-dark{
+  color: #fff !important;
+}

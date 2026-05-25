@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Mini Blog</title>
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/custom.css">
+        <link rel="stylesheet" href="fontAwesome/css/all.css">
+    </head>
+
+    <body onload="init()">
+        <div class="d-flex flex-column align-items-center p-3 bg-white border-bottom box-shadow fixed-top">
+            <img id="logo" src="img/mini-blog-logo.png" height="40">
+            <nav>
+                <a id="getLatest" class="p-2 text-dark" href="#">Latest</a>
+                <a id="getAll" class="p-2 text-dark active" href="#">All</a>
+                <a id="getPopular" class="p-2 text-dark" href="#">Popular</a>
+                <a href="#" id="darkMode"><i id="modeIcon" class="fas fa-moon"></i></a>
+            </nav>
+        </div>
+
+        <div class="blog-header mx-auto text-center">
+            <h1>Is it Beautiful?</h1>
+            <p class="lead">All the latest <strong><em>Tech</em></strong>, <strong><em>Design</em></strong> and <strong><em>Development</em></strong> news from around the world.</p>
+        </div>
+
+        <div class="container team">
+            <img src="img/lee.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/sally.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/bob.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/thandi.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/john.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/lungi.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/dave.jpg" class="img-thumbnail rounded-circle" width="90">
+            <img src="img/andile.jpg" class="img-thumbnail rounded-circle" width="90">
+        </div>
+
+        <div class="row container mx-auto">
+            <div class="column card-deck" id="posts">
+                Loading content...
+            </div>
+        </div>
+
+        <script src="js/jquery-4.0.0.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script>
+            let rootPath
+            let dark = false
+
+            function init(){
+                rootPath = "https://mysite.itvarsity.org/api/mini-blog/"
+                
+                document.getElementById("getAll").addEventListener('click', getAllPosts)
+                document.getElementById("getLatest").addEventListener('click', getLatestPosts)
+                document.getElementById("getPopular").addEventListener('click', getPopularPosts)
+                document.getElementById("darkMode").addEventListener('click', setDarkMode)
+
+                getAllPosts();
+            }
+
+            function getAllPosts(){
+                category = "getAll"
+                //console.log(category)
+                fetchPosts(category)       //fetch all posts in category
+                setActiveLink(category)    //set the "All" to avtive
+            }
+
+            function getPopularPosts(){
+                category = "getPopular"
+                //console.log(category)
+                fetchPosts(category)
+                setActiveLink(category)
+            }
+
+            function getLatestPosts(){
+                category = "getLatest"
+                //console.log(category)
+                fetchPosts(category)     
+                setActiveLink(category)
+            }
+
+            function fetchPosts(category){
+                fetch(rootPath + 'get-posts/?category=' + category)
+                    .then(function(response){
+                        return response.json()
+                    })
+                    .then(function(data){
+                        //console.log(data)
+                        displayPosts(data)
+                    })
+            }
+
+            function displayPosts(data){
+                let darkClass = (dark)?"text-bg-dark dark-mode":""
+                let output = ""
+                for(a = 0; a < data.length; a++){
+                    output += `
+                    <div class="card mb-4 box-shadow ${darkClass}">
+                        <div class="card-header ${darkClass}">
+                            <h4 class="my-0 font-weight-normal">${data[a][0]}</h4>
+                        </div>
+                        <div class="card-body">
+                            <img src="${rootPath}/uploads/${data[a][3]}" class="card-img-top">
+                            <p class="card-text .h3">${data[a][1]}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group ${darkClass}">
+                                    <button type="button" class="btn-lg btn-link"><i class="far fa-heart"></i></button>
+                                    <button type="button" class="btn-lg btn-link"><i class="far fa-comment"></i></button>
+                                    <button type="button" class="btn-lg btn-link"><i class="fa fa-retweet"></i></button>
+                                </div>
+                                <small class="text-muted ${darkClass}">${data[a][2]}</small>
+                            </div>
+                        </div>
+                    </div>
+                    `
+                }
+                output += `
+                    <br>
+                    <hr>
+                    <footer>
+                        <p>You have reached the end of the internet!</p>
+                    </footer>
+                `
+                document.getElementById('posts').innerHTML = output
+            }
+
+            function setActiveLink(id){
+                document.getElementById("getAll").classList.remove("active")
+                document.getElementById("getPopular").classList.remove("active")
+                document.getElementById("getLatest").classList.remove("active")
+                document.getElementById(id).classList.add("active")
+            }
+
+            function setDarkMode(event){
+        event.preventDefault()
+        dark = !dark
+
+        const topSection = document.querySelector('div.d-flex.flex-column.align-items-center.p-3.bg-white')
+        const modeIcon = document.getElementById('modeIcon')
+        const logo = document.getElementById('logo')
+
+        getAllPosts()
+
+        if(dark){
+            document.querySelector('body').classList.add('text-bg-dark')
+            topSection.classList.add('text-bg-dark')
+            logo.setAttribute('src','img/mini-blog-logo.png')
+            modeIcon.classList.remove('fa-moon')
+            modeIcon.classList.add('fa-sun')
+        }else{
+            document.querySelector('body').classList.remove('text-bg-dark')
+            topSection.classList.remove('text-bg-dark')
+            logo.setAttribute('src','img/mini-blog-logo.png')
+            modeIcon.classList.remove('fa-sun')
+            modeIcon.classList.add('fa-moon')
+                }
+            }
+            </script>
+        
+    </body>
+</html>
