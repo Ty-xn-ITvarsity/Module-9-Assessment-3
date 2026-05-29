@@ -1,166 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <title>Mini Blog</title>
+    <title>Mini Blog</title>
 
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/custom.css">
-        <link rel="stylesheet" href="fontAwesome/css/all.css">
-    </head>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="fontAwesome/css/all.css">
 
-    <body onload="init()">
-        <div class="d-flex flex-column align-items-center p-3 bg-white border-bottom box-shadow fixed-top">
-            <img id="logo" src="img/mini-blog-logo.png" height="40">
-            <nav>
-                <a id="getLatest" class="p-2 text-dark" href="#">Latest</a>
-                <a id="getAll" class="p-2 text-dark active" href="#">All</a>
-                <a id="getPopular" class="p-2 text-dark" href="#">Popular</a>
-                <a href="#" id="darkMode"><i id="modeIcon" class="fas fa-moon"></i></a>
-            </nav>
-        </div>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
 
-        <div class="blog-header mx-auto text-center">
-            <h1>Is it Beautiful?</h1>
-            <p class="lead">All the latest <strong><em>Tech</em></strong>, <strong><em>Design</em></strong> and <strong><em>Development</em></strong> news from around the world.</p>
-        </div>
+        .team-slider-shell {
+            max-width: 760px;
+            margin: 1rem auto 2rem;
+        }
 
-        <div class="container team">
-            <img src="img/lee.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/sally.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/bob.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/thandi.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/john.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/lungi.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/dave.jpg" class="img-thumbnail rounded-circle" width="90">
-            <img src="img/andile.jpg" class="img-thumbnail rounded-circle" width="90">
-        </div>
+        .team-slider-viewport {
+            max-width: 620px;
+            margin: 0 auto;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
 
-        <div class="row container mx-auto">
-            <div class="column card-deck" id="posts">
-                Loading content...
+        .team-slider-viewport::-webkit-scrollbar {
+            display: none;
+        }
+
+        .team-slider {
+            display: flex;
+            gap: 0.75rem;
+            width: max-content;
+            padding: 0.5rem;
+        }
+
+        .team-slider img {
+            flex: 0 0 110px;
+            width: 110px;
+        }
+
+        .team-meter-wrap {
+            max-width: 620px;
+            margin: 0.5rem auto 0;
+        }
+
+        .team-meter {
+            width: 100%;
+            accent-color: #0d6efd;
+            cursor: pointer;
+        }
+
+        .like-btn.liked i {
+            color: #dc3545;
+        }
+
+        .back-to-top {
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        body.bg-dark .team-meter {
+            accent-color: #66b2ff;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+    <div id="topBar" class="d-flex flex-column align-items-center p-3 bg-white border-bottom box-shadow fixed-top">
+        <img id="logo" src="img/mini-blog-logo.png" height="40" alt="Mini Blog logo">
+        <nav>
+            <a id="getLatest" class="p-2 text-dark" href="#">Latest</a>
+            <a id="getAll" class="p-2 text-dark active" href="#">All</a>
+            <a id="getPopular" class="p-2 text-dark" href="#">Popular</a>
+            <a id="darkMode" class="p-2 text-dark" href="#" aria-label="Toggle dark mode">
+                <i id="modeIcon" class="fas fa-moon"></i>
+            </a>
+        </nav>
+    </div>
+
+    <div class="blog-header mx-auto text-center">
+        <h1>Is it Beautiful?</h1>
+        <p class="lead">
+            All the latest <strong><em>Tech</em></strong>,
+            <strong><em>Design</em></strong> and
+            <strong><em>Development</em></strong> news from around the world.
+        </p>
+    </div>
+
+    <div class="team-slider-shell">
+        <div class="team-slider-viewport" id="teamSlider" onscroll="syncTeamMeter()">
+            <div class="team-slider">
+                <img src="img/lee.jpg" class="img-thumbnail rounded-circle" alt="Lee">
+                <img src="img/sally.jpg" class="img-thumbnail rounded-circle" alt="Sally">
+                <img src="img/bob.jpg" class="img-thumbnail rounded-circle" alt="Bob">
+                <img src="img/thandi.jpg" class="img-thumbnail rounded-circle" alt="Thandi">
+                <img src="img/john.jpg" class="img-thumbnail rounded-circle" alt="John">
+                <img src="img/lungi.jpg" class="img-thumbnail rounded-circle" alt="Lungi">
+                <img src="img/dave.jpg" class="img-thumbnail rounded-circle" alt="Dave">
+                <img src="img/andile.jpg" class="img-thumbnail rounded-circle" alt="Andile">
             </div>
         </div>
 
-        <script src="js/jquery-4.0.0.min.js"></script>
-        <script src="js/bootstrap.bundle.min.js"></script>
-        <script>
-            let rootPath
-            let dark = false
+        <div class="team-meter-wrap">
+            <input
+                type="range"
+                id="teamMeter"
+                class="team-meter"
+                min="0"
+                max="100"
+                value="0"
+                oninput="moveTeamSlider(this.value)"
+                aria-label="Team image slider">
+        </div>
+    </div>
 
-            function init(){
-                rootPath = "https://mysite.itvarsity.org/api/mini-blog/"
-                
-                document.getElementById("getAll").addEventListener('click', getAllPosts)
-                document.getElementById("getLatest").addEventListener('click', getLatestPosts)
-                document.getElementById("getPopular").addEventListener('click', getPopularPosts)
-                document.getElementById("darkMode").addEventListener('click', setDarkMode)
+    <div class="row container mx-auto">
+        <div class="col-12" id="posts">
+            Loading content...
+        </div>
+    </div>
 
+    <script src="js/jquery-4.0.0.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        let rootPath = "";
+        let dark = false;
+        let currentCategory = "getAll";
+        let currentPosts = [];
+
+        function init() {
+            rootPath = "https://mysite.itvarsity.org/api/mini-blog/";
+
+            document.getElementById("getAll").addEventListener("click", function (event) {
+                event.preventDefault();
                 getAllPosts();
-            }
+            });
 
-            function getAllPosts(){
-                category = "getAll"
-                //console.log(category)
-                fetchPosts(category)       //fetch all posts in category
-                setActiveLink(category)    //set the "All" to avtive
-            }
+            document.getElementById("getLatest").addEventListener("click", function (event) {
+                event.preventDefault();
+                getLatestPosts();
+            });
 
-            function getPopularPosts(){
-                category = "getPopular"
-                //console.log(category)
-                fetchPosts(category)
-                setActiveLink(category)
-            }
+            document.getElementById("getPopular").addEventListener("click", function (event) {
+                event.preventDefault();
+                getPopularPosts();
+            });
 
-            function getLatestPosts(){
-                category = "getLatest"
-                //console.log(category)
-                fetchPosts(category)     
-                setActiveLink(category)
-            }
+            document.getElementById("darkMode").addEventListener("click", setDarkMode);
 
-            function fetchPosts(category){
-                fetch(rootPath + 'get-posts/?category=' + category)
-                    .then(function(response){
-                        return response.json()
-                    })
-                    .then(function(data){
-                        //console.log(data)
-                        displayPosts(data)
-                    })
-            }
+            syncTeamMeter();
+            getAllPosts();
+        }
 
-            function displayPosts(data){
-                let darkClass = (dark)?"text-bg-dark dark-mode":""
-                let output = ""
-                for(a = 0; a < data.length; a++){
-                    output += `
-                    <div class="card mb-4 box-shadow ${darkClass}">
-                        <div class="card-header ${darkClass}">
-                            <h4 class="my-0 font-weight-normal">${data[a][0]}</h4>
+        function getAllPosts() {
+            currentCategory = "getAll";
+            fetchPosts(currentCategory);
+            setActiveLink(currentCategory);
+        }
+
+        function getPopularPosts() {
+            currentCategory = "getPopular";
+            fetchPosts(currentCategory);
+            setActiveLink(currentCategory);
+        }
+
+        function getLatestPosts() {
+            currentCategory = "getLatest";
+            fetchPosts(currentCategory);
+            setActiveLink(currentCategory);
+        }
+
+        function fetchPosts(category) {
+            document.getElementById("posts").innerHTML = "Loading content...";
+
+            fetch(rootPath + "get-posts/?category=" + category)
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error("Failed to load posts");
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    currentPosts = Array.isArray(data) ? data : [];
+                    displayPosts(currentPosts);
+                })
+                .catch(function () {
+                    document.getElementById("posts").innerHTML = `
+                        <div class="alert alert-danger w-100 text-center">
+                            Unable to load posts.
                         </div>
-                        <div class="card-body">
-                            <img src="${rootPath}/uploads/${data[a][3]}" class="card-img-top">
-                            <p class="card-text .h3">${data[a][1]}</p>
+                    `;
+                });
+        }
+
+        function displayPosts(data) {
+            const cardThemeClass = dark ? "bg-dark text-white dark-mode" : "";
+            const mutedTextClass = dark ? "text-light" : "text-muted";
+            const buttonTextClass = dark ? "text-white" : "";
+            const footerLinkClass = dark ? "text-info" : "text-primary";
+            let output = "";
+
+            if (!data || data.length === 0) {
+                document.getElementById("posts").innerHTML = `
+                    <div class="alert alert-info w-100 text-center">
+                        No posts found.
+                    </div>
+                `;
+                return;
+            }
+
+            for (let a = 0; a < data.length; a++) {
+                const post = data[a];
+                const postKey = getPostKey(post);
+                const liked = isLiked(postKey);
+                const likeCount = getLikeCount(postKey);
+
+                output += `
+                    <div class="card mb-4 box-shadow ${cardThemeClass}">
+                        <div class="card-header ${cardThemeClass}">
+                            <h4 class="my-0 font-weight-normal">${post[0]}</h4>
+                        </div>
+                        <div class="card-body ${cardThemeClass}">
+                            <img src="${rootPath}uploads/${post[3]}" class="card-img-top" alt="${post[0]}">
+                            <p class="card-text h5 mt-3">${post[1]}</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group ${darkClass}">
-                                    <button type="button" class="btn-lg btn-link"><i class="far fa-heart"></i></button>
-                                    <button type="button" class="btn-lg btn-link"><i class="far fa-comment"></i></button>
-                                    <button type="button" class="btn-lg btn-link"><i class="fa fa-retweet"></i></button>
+                                <div class="btn-group">
+                                    <button
+                                        type="button"
+                                        class="btn btn-link btn-lg ${buttonTextClass} like-btn ${liked ? "liked" : ""}"
+                                        onclick="toggleLike(${a})"
+                                        aria-label="Like this post">
+                                        <i class="${liked ? "fas" : "far"} fa-heart"></i>
+                                        <span class="ml-1">${likeCount}</span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-lg ${buttonTextClass}">
+                                        <i class="far fa-comment"></i>
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-lg ${buttonTextClass}">
+                                        <i class="fa fa-retweet"></i>
+                                    </button>
                                 </div>
-                                <small class="text-muted ${darkClass}">${data[a][2]}</small>
+                                <small class="${mutedTextClass}">${post[2]}</small>
                             </div>
                         </div>
                     </div>
-                    `
-                }
-                output += `
-                    <br>
-                    <hr>
-                    <footer>
-                        <p>You have reached the end of the internet!</p>
-                    </footer>
-                `
-                document.getElementById('posts').innerHTML = output
+                `;
             }
 
-            function setActiveLink(id){
-                document.getElementById("getAll").classList.remove("active")
-                document.getElementById("getPopular").classList.remove("active")
-                document.getElementById("getLatest").classList.remove("active")
-                document.getElementById(id).classList.add("active")
+            output += `
+                <br>
+                <hr>
+                <footer class="text-center pb-4">
+                    <p>You have reached the end of the internet!</p>
+                    <a href="#topBar" class="back-to-top ${footerLinkClass}">Back to top ↑</a>
+                </footer>
+            `;
+
+            document.getElementById("posts").innerHTML = output;
+        }
+
+        function setActiveLink(id) {
+            document.getElementById("getAll").classList.remove("active");
+            document.getElementById("getPopular").classList.remove("active");
+            document.getElementById("getLatest").classList.remove("active");
+            document.getElementById(id).classList.add("active");
+        }
+
+        function setDarkMode(event) {
+            event.preventDefault();
+
+            dark = !dark;
+
+            const body = document.body;
+            const topBar = document.getElementById("topBar");
+            const modeIcon = document.getElementById("modeIcon");
+            const navLinks = document.querySelectorAll("nav a");
+
+            if (dark) {
+                body.classList.add("bg-dark", "text-white");
+                topBar.classList.remove("bg-white");
+                topBar.classList.add("bg-dark", "text-white");
+
+                navLinks.forEach(function (link) {
+                    link.classList.remove("text-dark");
+                    link.classList.add("text-white");
+                });
+
+                modeIcon.classList.remove("fa-moon");
+                modeIcon.classList.add("fa-sun");
+            } else {
+                body.classList.remove("bg-dark", "text-white");
+                topBar.classList.remove("bg-dark", "text-white");
+                topBar.classList.add("bg-white");
+
+                navLinks.forEach(function (link) {
+                    link.classList.remove("text-white");
+                    link.classList.add("text-dark");
+                });
+
+                modeIcon.classList.remove("fa-sun");
+                modeIcon.classList.add("fa-moon");
             }
 
-            function setDarkMode(event){
-        event.preventDefault()
-        dark = !dark
+            displayPosts(currentPosts);
+            setActiveLink(currentCategory);
+        }
 
-        const topSection = document.querySelector('div.d-flex.flex-column.align-items-center.p-3.bg-white')
-        const modeIcon = document.getElementById('modeIcon')
-        const logo = document.getElementById('logo')
+        function moveTeamSlider(value) {
+            const slider = document.getElementById("teamSlider");
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+            slider.scrollLeft = (value / 100) * maxScroll;
+        }
 
-        getAllPosts()
+        function syncTeamMeter() {
+            const slider = document.getElementById("teamSlider");
+            const meter = document.getElementById("teamMeter");
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
 
-        if(dark){
-            document.querySelector('body').classList.add('text-bg-dark')
-            topSection.classList.add('text-bg-dark')
-            logo.setAttribute('src','img/mini-blog-logo.png')
-            modeIcon.classList.remove('fa-moon')
-            modeIcon.classList.add('fa-sun')
-        }else{
-            document.querySelector('body').classList.remove('text-bg-dark')
-            topSection.classList.remove('text-bg-dark')
-            logo.setAttribute('src','img/mini-blog-logo.png')
-            modeIcon.classList.remove('fa-sun')
-            modeIcon.classList.add('fa-moon')
-                }
+            if (maxScroll <= 0) {
+                meter.value = 0;
+                meter.disabled = true;
+                return;
             }
-            </script>
-        
-    </body>
+
+            meter.disabled = false;
+            meter.value = (slider.scrollLeft / maxScroll) * 100;
+        }
+
+        window.addEventListener("resize", syncTeamMeter);
+
+        function getPostKey(post) {
+            return post[0] + "|" + post[2] + "|" + post[3];
+        }
+
+        function getLikesStore() {
+            return JSON.parse(localStorage.getItem("miniBlogLikes") || "{}");
+        }
+
+        function saveLikesStore(store) {
+            localStorage.setItem("miniBlogLikes", JSON.stringify(store));
+        }
+
+        function isLiked(postKey) {
+            const store = getLikesStore();
+            return !!(store[postKey] && store[postKey].liked);
+        }
+
+        function getLikeCount(postKey) {
+            const store = getLikesStore();
+            return store[postKey] ? store[postKey].count : 0;
+        }
+
+        function toggleLike(index) {
+            const post = currentPosts[index];
+
+            if (!post) {
+                return;
+            }
+
+            const postKey = getPostKey(post);
+            const store = getLikesStore();
+
+            if (!store[postKey]) {
+                store[postKey] = {
+                    liked: false,
+                    count: 0
+                };
+            }
+
+            if (store[postKey].liked) {
+                store[postKey].liked = false;
+                store[postKey].count = Math.max(0, store[postKey].count - 1);
+            } else {
+                store[postKey].liked = true;
+                store[postKey].count += 1;
+            }
+
+            saveLikesStore(store);
+            displayPosts(currentPosts);
+        }
+    </script>
+</body>
 </html>
